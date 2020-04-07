@@ -238,5 +238,57 @@ public class WebAuthnClient: ClientOperationDelegate {
         return (clientData, clientDataJSON, clientDataHash)
     }
 
+    // For signing raw hash.  Challenge must be 32 bytes.
+    public func signRaw(_ options: PublicKeyCredentialRequestOptions)
+       -> Promise<GetResponse> {
+        WAKLogger.debug("<WebAuthnClient> get")
+
+        return Promise { resolver in
+
+            let op = self.newSignRawOperation(options)
+            op.delegate = self
+            self.getOperations[op.id] = op
+
+            let promise = op.start()
+            promise.done {cred in
+
+                resolver.fulfill(cred)
+
+            }.catch { error in
+
+                resolver.reject(error)
+
+            }
+
+        }
+    }
+    
+    public func newSignRawOperation(_ options: PublicKeyCredentialRequestOptions)
+        -> ClientGetOperation {
+
+        WAKLogger.debug("<WebAuthnClient> newGetOperation")
+
+        let lifetimeTimer = self.adjustLifetimeTimer(options.timeout)
+        let rpId = self.pickRelyingPartyID(options.rpId)
+
+        let session = self.authenticator.newGetAssertionSession()
+            
+        let (clientData, clientDataJSON, _) =
+            self.generateClientData(
+                type:      .webAuthnGet,
+                challenge: Base64.encodeBase64URL(options.challenge)
+        )
+
+        return ClientGetOperation(
+            options:        options,
+            rpId:           rpId,
+            session:        session,
+            clientData:     clientData,
+            clientDataJSON: clientDataJSON,
+            clientDataHash: options.challenge,  // use options.challenge instead of CDH
+            lifetimeTimer:  lifetimeTimer
+        )
+    }
+
 }
 
