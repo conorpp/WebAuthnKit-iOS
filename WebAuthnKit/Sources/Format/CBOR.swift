@@ -504,9 +504,9 @@ internal class CBORReader {
         case 4:
             result = Int64((UInt32(b2[0]) << 24) | (UInt32(b2[1]) << 16) | (UInt32(b2[2]) << 8) | UInt32(b2[3]))
         case 8:
-            let result1 = Int64((UInt64(b2[0]) << 56) | (UInt64(b2[1]) << 48) | (UInt64(b2[2]) << 40) | (UInt64(b2[3]) << 32))
-            let result2 = Int64((UInt64(b2[4]) << 24) | (UInt64(b2[5]) << 16) | (UInt64(b2[6]) << 8) | UInt64(b2[7]))
-            result = result1 | result2
+            let result1 = (UInt64(b2[0]) << 56) | (UInt64(b2[1]) << 48) | (UInt64(b2[2]) << 40) | (UInt64(b2[3]) << 32)
+            let result2 = (UInt64(b2[4]) << 24) | (UInt64(b2[5]) << 16) | (UInt64(b2[6]) << 8) | UInt64(b2[7])
+            result = Int64(result1) | Int64(result2)
         default:
             WAKLogger.debug("<CBORReader> invalid 'number' format")
             return nil

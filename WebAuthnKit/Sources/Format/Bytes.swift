@@ -39,9 +39,9 @@ public class Bytes {
         while b.count > 8 {
            b.removeFirst()
         }
-        let result1 = UInt64((UInt64(b[0]) << 56) | (UInt64(b[1]) << 48) | (UInt64(b[2]) << 40) | (UInt64(b[3]) << 32))
-        let result2 = UInt64((UInt64(b[4]) << 24) | (UInt64(b[5]) << 16) | (UInt64(b[6]) << 8) | UInt64(b[7]))
-        return result1 | result2
+        let result1 = ((UInt64(b[0]) << 56) | (UInt64(b[1]) << 48) | (UInt64(b[2]) << 40) | (UInt64(b[3]) << 32))
+        let result2 = ((UInt64(b[4]) << 24) | (UInt64(b[5]) << 16) | (UInt64(b[6]) << 8) | UInt64(b[7]))
+        return UInt64(result1) | UInt64(result2)
     }
 
     public static func fromUInt32(_ value: UInt32) -> [UInt8] {
